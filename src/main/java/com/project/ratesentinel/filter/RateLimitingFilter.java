@@ -2,12 +2,15 @@ package com.project.ratesentinel.filter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.project.ratesentinel.event.RateLimitViolationEvent;
 import com.project.ratesentinel.service.RateLimiterService;
 
 import jakarta.servlet.FilterChain;
@@ -19,11 +22,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class RateLimitingFilter extends OncePerRequestFilter {
 
 	private static final String CLIENT_ID_HEADER = "X-Client-Id";
+	private static final String VIOLATIONS_TOPIC = "/topic/violations";
 
 	private final RateLimiterService rateLimiterService;
+	private final SimpMessagingTemplate messagingTemplate;
 
-	public RateLimitingFilter(RateLimiterService rateLimiterService) {
+	public RateLimitingFilter(
+			RateLimiterService rateLimiterService,
+			SimpMessagingTemplate messagingTemplate) {
 		this.rateLimiterService = rateLimiterService;
+		this.messagingTemplate = messagingTemplate;
 	}
 
 	@Override
@@ -39,6 +47,9 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 		}
 
 		if (!rateLimiterService.isAllowed(clientId, request.getRequestURI())) {
+			messagingTemplate.convertAndSend(
+				VIOLATIONS_TOPIC,
+				new RateLimitViolationEvent(clientId, request.getRequestURI(), Instant.now()));
 			writeError(
 				response,
 				HttpStatus.TOO_MANY_REQUESTS.value(),
