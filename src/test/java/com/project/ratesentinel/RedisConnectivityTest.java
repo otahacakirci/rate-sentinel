@@ -8,10 +8,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import com.project.ratesentinel.repository.RateLimitRuleRepository;
 
 @SpringBootTest(properties = "spring.autoconfigure.exclude="
 	+ "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
@@ -33,6 +36,9 @@ class RedisConnectivityTest {
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;
+
+	@MockitoBean
+	private RateLimitRuleRepository repository;
 
 	@Test
 	void writesAndReadsValue() {
