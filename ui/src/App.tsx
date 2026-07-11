@@ -1,4 +1,5 @@
 import { LiveViolationsLogTable } from './components/LiveViolationsLogTable'
+import { RuleManagement } from './components/RuleManagement'
 import { useWebSocket, type WebSocketStatus } from './hooks/useWebSocket'
 
 const statusStyles: Record<WebSocketStatus, string> = {
@@ -18,7 +19,7 @@ function App() {
 
   return (
     <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-[1600px]">
         <header className="mb-8 flex flex-col gap-6 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
@@ -67,7 +68,10 @@ function App() {
           </div>
         </div>
 
-        <LiveViolationsLogTable violations={violations} />
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+          <RuleManagement />
+          <LiveViolationsLogTable violations={violations} />
+        </div>
       </div>
     </main>
   )
