@@ -13,7 +13,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.autoconfigure.exclude="
+	+ "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @Testcontainers
 class RedisConnectivityTest {
 
