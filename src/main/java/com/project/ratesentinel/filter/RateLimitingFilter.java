@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class RateLimitingFilter extends OncePerRequestFilter {
 
 	private static final String CLIENT_ID_HEADER = "X-Client-Id";
+	private static final String RULES_PATH_PREFIX = "/api/rules";
 	private static final String VIOLATIONS_TOPIC = "/topic/violations";
 
 	private final RateLimiterService rateLimiterService;
@@ -32,6 +33,11 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 			SimpMessagingTemplate messagingTemplate) {
 		this.rateLimiterService = rateLimiterService;
 		this.messagingTemplate = messagingTemplate;
+	}
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		return request.getRequestURI().startsWith(RULES_PATH_PREFIX);
 	}
 
 	@Override
